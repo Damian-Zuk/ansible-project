@@ -1,0 +1,58 @@
+---
+# tasks file for setup_mysql_db
+- name: Install pip
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+
+- name: Install PyMySQL
+  pip:
+    name: PyMySQL
+
+- name: Install MySQL Server
+  ansible.builtin.apt:
+    name: mysql-server
+    state: present
+
+- name: Ensure MySQL is enabled to run on startup
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Configure MySQL Server
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ mysql_user }}"
+    host: "localhost"
+    password: "{{ mysql_pass }}"
+    login_user: "{{ mysql_user }}"
+    login_password: "{{ mysql_pass }}"
+    check_implicit_admin: yes
+    priv: "*.*:ALL,GRANT"
+
+- name: Create database
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_user: "{{ mysql_user }}"
+    login_password: "{{ mysql_pass }}"
+    name: "{{ mysql_database }}"
+    state: present
+
+- name: Check if posts table exists
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_user: "{{ mysql_user }}"
+    login_password: "{{ mysql_pass }}"
+    login_db: "{{ mysql_database }}"
+    query: "SHOW TABLES FROM {{ mysql_database }} LIKE 'posts'"
+  register: posts_table_check
+
+- name: Create table for blog posts
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_user: "{{ mysql_user }}"
+    login_password: "{{ mysql_pass }}"
+    login_db: "{{ mysql_database }}"
+    query: "{{ lookup('file', 'posts_table.sql')}}"
+  when: posts_table_check.rowcount == 0

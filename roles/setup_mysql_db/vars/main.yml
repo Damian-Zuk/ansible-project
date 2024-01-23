@@ -1,0 +1,6 @@
+---
+# vars file for install_apache
+mysql_database: "blogdb"
+mysql_user: "root"
+mysql_pass: "qwe#3264!"
+

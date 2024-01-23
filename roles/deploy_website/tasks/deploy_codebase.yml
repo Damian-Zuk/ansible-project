@@ -1,0 +1,22 @@
+---
+# tasks file for deploy_website
+
+- name: Get latest codebase
+  git:
+    repo: https://github.com/Damian-Zuk/simple-lamp-website.git
+    version: main
+    dest: "/tmp/website-repo"
+    single_branch: yes
+    accept_hostkey: true
+    depth: 1
+    key_file: deploy_key   
+  register: code_upload
+
+- name: Replace live codebase
+  delegate_to: "{{ inventory_hostname }}"
+  synchronize:
+    src: "/tmp/website-repo/"
+    dest: /var/www
+    recursive: yes
+    delete: yes
+  when: code_upload.changed

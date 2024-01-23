@@ -1,0 +1,6 @@
+---
+# vars file for create_admin_user
+admin:
+  - name: 'semaphore'
+    comment: 'semaphore'
+    uid: 2500

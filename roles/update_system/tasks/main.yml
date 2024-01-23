@@ -1,0 +1,8 @@
+---
+# tasks file for update_system
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600

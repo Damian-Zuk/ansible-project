@@ -1,0 +1,45 @@
+---
+# tasks file for setup_apache_and_php
+
+- name: Install apache
+  ansible.builtin.apt:
+    name: "apache2"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install PHP and related modules
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php
+    - libapache2-mod-php
+    - php-mysql
+    - php-curl
+    - php-gd
+    - php-intl
+    - php-json
+    - php-mbstring
+    - php-xml
+    - php-zip
+
+- name: Enable PHP module
+  apache2_module:
+    name: php
+    state: present
+
+- name: Update PHP settings
+  ini_file:
+    path: /etc/php/8.1/apache2/php.ini
+    section: PHP
+    option: memory_limit
+    value: 256M
+    state: present
+  
+- name: Restart Apache2
+  service:
+    name: apache2
+    state: restarted
+
+

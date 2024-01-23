@@ -1,0 +1,23 @@
+---
+# tasks file for website_config_deployment
+- name: Create config directory
+  file:
+    path: /var/www/config
+    state: directory
+    mode: 0755
+
+- name: Load MySQL database variables
+  include_vars:
+    file: "../setup_mysql_db/vars/main.yml"
+
+- name: Generate website config file
+  template:
+    src: templates/config.php.j2
+    dest: /var/www/config/config.php
+  vars:
+    db_host: "{{ hostvars[inventory_hostname]['database_host'] }}"
+    db_name: "{{ mysql_database }}"
+    db_user: "{{ mysql_user }}"
+    db_pass: "{{ mysql_pass }}"
+    website_title: "{{ hostvars[inventory_hostname]['website_title'] }}"  
+    

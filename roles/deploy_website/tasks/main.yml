@@ -1,0 +1,6 @@
+# tasks file for deploy_website
+- name: Deploy codebase
+  include_tasks: "deploy_codebase.yml"
+
+- name: Deploy website configuration
+  include_tasks: "deploy_configuration.yml"
